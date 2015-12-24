@@ -13,6 +13,12 @@ namespace excellDataReconstructor
         private Excel.Application application;
         private Excel.Workbook Workbook;
 
+        //delete this
+        private Excel.Worksheet newMySheet;
+        private string currentSheet = "Sheet1";
+
+        //delete this
+
         private string errorMessageBase = "Please select a destination to save the new excel document!";
 
         public string OrigionalFileUrl { get; set; }
@@ -26,22 +32,25 @@ namespace excellDataReconstructor
             }
             else
             {
-                Convert();
+                ConvertAndSave();
                 Quit();
             }
         }
 
-        private void Convert()
+        private void ConvertAndSave()
         {
             application = new Excel.Application { Visible = false };
-            application.DefaultWebOptions.Encoding = MsoEncoding.msoEncodingUTF8;
             Workbook = application.Workbooks.Open(OrigionalFileUrl);
-
-            Workbook.SaveAs(NewFileUrl);
+            Workbook.WebOptions.Encoding = MsoEncoding.msoEncodingUTF8;
+            Workbook.SaveAs(NewFileUrl, Excel.XlFileFormat.xlCSV);
         }
 
         private void Quit()
         {
+            if (Workbook != null)
+            {
+                Workbook.Close(false, System.Reflection.Missing.Value, System.Reflection.Missing.Value);
+            }
             if (application != null)
             {
                 application.Quit();

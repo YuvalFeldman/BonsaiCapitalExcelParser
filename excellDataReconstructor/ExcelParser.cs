@@ -18,7 +18,6 @@ namespace excellDataReconstructor
       
         private Excel.Workbook newWorkbook;
         private Excel.Application newMyApp;
-        private Excel.Sheets excelSheets;
         private Excel.Worksheet newMySheet;
 
         private string currentSheet = "Sheet1";
@@ -54,8 +53,7 @@ namespace excellDataReconstructor
             //init new excel file
             newMyApp = new Excel.Application {Visible = false};
             newWorkbook = newMyApp.Workbooks.Add();
-            excelSheets = newWorkbook.Worksheets;
-            newMySheet = (Excel.Worksheet)excelSheets.Item[currentSheet];
+            newMySheet = (Excel.Worksheet)newWorkbook.Worksheets[1];
         }
 
         private void addHeaders()
@@ -77,6 +75,14 @@ namespace excellDataReconstructor
 
         private void Quit()
         {
+            if (originalWorkbookMyBook != null)
+            {
+                originalWorkbookMyBook.Close();
+            }
+            if (newWorkbook != null)
+            {
+                newWorkbook.Close();
+            }
             if (OriginalMyApp != null)
             {
                 OriginalMyApp.Quit();
