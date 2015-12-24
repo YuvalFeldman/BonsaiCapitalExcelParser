@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
+using Microsoft.Office.Core;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace excellDataReconstructor
@@ -18,17 +21,25 @@ namespace excellDataReconstructor
         private Excel.Sheets excelSheets;
         private Excel.Worksheet newMySheet;
 
-        string currentSheet = "Sheet1";
+        private string currentSheet = "Sheet1";
+        private string errorMessageBase = "Please select a destination to save the new excel document!";
 
         public string OrigionalFileUrl { get; set; }
         public string NewFileUrl { get; set; }
 
         public void Parse()
         {
-            init();
-            addHeaders();
-            SaveData();
-            Quit();
+            if (NewFileUrl == null)
+            {
+                MessageBox.Show(errorMessageBase);
+            }
+            else
+            {
+                init();
+                addHeaders();
+                SaveData();
+                Quit();
+            }
         }
 
         private void init()
@@ -44,7 +55,7 @@ namespace excellDataReconstructor
             newMyApp = new Excel.Application {Visible = false};
             newWorkbook = newMyApp.Workbooks.Add();
             excelSheets = newWorkbook.Worksheets;
-            newMySheet = (Excel.Worksheet)excelSheets.get_Item(currentSheet);
+            newMySheet = (Excel.Worksheet)excelSheets.Item[currentSheet];
         }
 
         private void addHeaders()
@@ -54,12 +65,26 @@ namespace excellDataReconstructor
 
         private void SaveData()
         {
-            newWorkbook.SaveAs(NewFileUrl);
+            if (NewFileUrl == null)
+            {
+                MessageBox.Show(errorMessageBase);
+            }
+            else
+            {
+                newWorkbook.SaveAs(NewFileUrl);
+            }
         }
 
         private void Quit()
         {
-            newMyApp.Quit();
+            if (OriginalMyApp != null)
+            {
+                OriginalMyApp.Quit();
+            }
+            if (newMyApp != null)
+            {
+                newMyApp.Quit();
+            }
         }
     }
 }
