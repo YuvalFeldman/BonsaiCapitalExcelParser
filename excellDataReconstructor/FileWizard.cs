@@ -10,13 +10,13 @@ namespace excellDataReconstructor
 
     class FileWizard
     {
-        private readonly OpenFileDialog _openFileDialogDisplayContent = new OpenFileDialog();
-        private readonly SaveFileDialog _saveFileDialog = new SaveFileDialog();
+        private OpenFileDialog _openFileDialogDisplayContent = new OpenFileDialog();
+        private SaveFileDialog _saveFileDialog = new SaveFileDialog();
 
         public FileWizard()
         {
             _openFileDialogDisplayContent.Filter = @"Excel Files(.xls)|*.xls| Excel Files(.xlsx)|*.xlsx| Excel Files(*.xlsm)|*.xlsm";
-            _saveFileDialog.Filter = @"Excel Files(.xls)|*.xls| Excel Files(.xlsx)|*.xlsx| Excel Files(*.xlsm)|*.xlsm";
+            _saveFileDialog.Filter = @"Excel Files(.xlsx)|*.xlsx| Excel Files(*.xlsm)|*.xlsm";
         }
 
         public string OrigionalFileUrl { get; set; }
@@ -37,7 +37,7 @@ namespace excellDataReconstructor
             if (_saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 NewFileUrl = _saveFileDialog.FileName;
-                File.Open(NewFileUrl, FileMode.Create);
+                //File.Create(NewFileUrl);
             }
         }
     }

@@ -13,8 +13,8 @@ namespace excellDataReconstructor
 {
     public partial class MainForm : Form
     {
-        readonly FileWizard _fileWizard = new FileWizard();
-        readonly ExcelParser _excelParser = new ExcelParser();
+        FileWizard _fileWizard = new FileWizard();
+        ExcelParser _excelParser = new ExcelParser();
 
         public MainForm()
         {
