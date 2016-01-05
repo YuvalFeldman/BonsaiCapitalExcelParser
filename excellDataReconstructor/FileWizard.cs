@@ -16,7 +16,7 @@ namespace excellDataReconstructor
 
         public FileWizard()
         {
-            _openFileDialogDisplayContent.Filter = @"Excel Files(.xls)|*.xls| Excel Files(.xlsx)|*.xlsx| Excel Files(*.xlsm)|*.xlsm";
+            _openFileDialogDisplayContent.Filter = @"Excel Files(.xlsx)|*.xlsx| Excel Files(.xls)|*.xls| Excel Files(*.xlsm)|*.xlsm";
             _saveFileDialogExcelFilter.Filter = @"Excel Files(.xlsx)|*.xlsx| Excel Files(*.xlsm)|*.xlsm";
             _saveFileDialogCSVFilter.Filter = @"CSV files (*.csv)|*.csv|XML files (*.xml)|*.xml";
         }
