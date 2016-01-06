@@ -20,6 +20,7 @@ namespace excellDataReconstructor
         //delete this
 
         private string errorMessageBase = "Please select a destination to save the new excel document!";
+        private string TaskCompletedMessage = "Conversion to CSV has completed.";
 
         public string OrigionalFileUrl { get; set; }
         public string NewFileUrl { get; set; }
@@ -34,6 +35,7 @@ namespace excellDataReconstructor
             {
                 ConvertAndSave();
                 Quit();
+                ShowTaskCompleteMessage();
             }
         }
 
@@ -56,5 +58,11 @@ namespace excellDataReconstructor
                 application.Quit();
             }
         }
+
+        private void ShowTaskCompleteMessage()
+        {
+            MessageBox.Show(TaskCompletedMessage);
+        }
+
     }
 }

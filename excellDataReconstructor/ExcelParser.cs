@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using Application = Microsoft.Office.Interop.Excel.Application;
@@ -19,6 +20,7 @@ namespace excellDataReconstructor
 
         private string currentSheet = "Sheet1";
         private string errorMessageBase = "Please select a destination to save the new excel document!";
+        private string TaskCompletedMessage = "Conversion to excel has completed.";
 
         private List<List<string>> ContentMatrix = new List<List<string>>();
         List<string> ContentColumnData = new List<string>();
@@ -26,8 +28,6 @@ namespace excellDataReconstructor
 
         public string OrigionalFileUrl { get; set; }
         public string NewFileUrl { get; set; }
-        public int NumberOfRowsInOrigionalFile { get; set; }
-        public int CurrentRowInFile { get; set; }
 
         public void Parse()
         {
@@ -40,12 +40,13 @@ namespace excellDataReconstructor
                 Init();
                 AddHeaders();
                 GetColumnData();
+                FixColumnData();
                 ParseData();
                 AddContentToExcel();
                 SaveData();
-                MessageBox.Show("done");
                 ClearDataForNextRun();
                 Quit();
+                ShowTaskCompleteMessage();
             }
         }
 
@@ -60,19 +61,6 @@ namespace excellDataReconstructor
             newMyApp = new Application {Visible = false};
             newWorkbook = newMyApp.Workbooks.Add();
             newMySheet = (Worksheet)newWorkbook.Worksheets[1];
-        }
-
-        private void GetLastRow()
-        {
-            var Column = OriginalMySheet.Range["A:A"].Cells;
-            foreach (Range item in Column.Cells)
-            {
-                if (item.Value != null && item.Value.ToString() == "Complete")
-                {
-                    break;
-                }
-                NumberOfRowsInOrigionalFile++;
-            }
         }
 
         private void AddHeaders()
@@ -162,6 +150,50 @@ namespace excellDataReconstructor
             }
         }
 
+        private void FixColumnData()
+        {
+            string[] headerOptions =
+            {
+                "שם חברה",
+                "כתובת",
+                "ישוב",
+                "טלפון",
+                "פקס",
+                "דואר אלקטרוני",
+                "כתובת אינטרנט",
+                "מס. רישום",
+                "סיווגים",
+                "אופי פעילות",
+                "מס. מועסקים",
+                "מנהלים"
+            };
+            for(int k = 0; k < HeaderColumnData.Count; k++)
+            {
+                var flag = true;
+                if (HeaderColumnData[k] == null) continue;
+                if (headerOptions.Any(headerOption => HeaderColumnData[k] == headerOption))
+                {
+                    flag = false;
+                }
+                if (!flag) continue;
+                var closestHeader = "";
+                var maxAmountOfMatchingCharacters = 0;
+
+                foreach (var headerOption in headerOptions)
+                {
+                    if (headerOption.Length != HeaderColumnData[k].Length) continue;
+                    var headerOptionArray = headerOption.ToCharArray();
+                    var headerColumnDataArray = HeaderColumnData[k].ToCharArray();
+                    var numberOfSimilareChars = headerOptionArray.Where((t, i) => t == headerColumnDataArray[i]).Count();
+                    if (numberOfSimilareChars <= maxAmountOfMatchingCharacters) continue;
+                    closestHeader = headerOption;
+                    maxAmountOfMatchingCharacters = numberOfSimilareChars;
+                }
+
+                HeaderColumnData[k] = closestHeader;
+            }
+        }
+
         private void ParseData()
         {
             int i = 0;
@@ -233,13 +265,13 @@ namespace excellDataReconstructor
 
                         formatedContentRow[4] = seperatedContent[0];
 
-                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        if (seperatedContent.Length == 2 && seperatedContent[1] != null)
+                        {
+                            formatedContentRow[8] = seperatedContent[1];
+                        }
+                        else if (seperatedContent.Length > 3 && seperatedContent[2] != null)
                         {
                             formatedContentRow[5] = seperatedContent[1];
-                        }
-
-                        if (seperatedContent.Length > 2 && seperatedContent[2] != null)
-                        {
                             formatedContentRow[8] = seperatedContent[2];
                         }
 
@@ -346,6 +378,8 @@ namespace excellDataReconstructor
         private void ClearDataForNextRun()
         {
             ContentMatrix = new List<List<string>>();
+            ContentColumnData = new List<string>();
+            HeaderColumnData = new List<string>();
         }
 
         private void AddContentToExcel()
@@ -430,6 +464,11 @@ namespace excellDataReconstructor
                     // ignored
                 }
             }
+        }
+
+        private void ShowTaskCompleteMessage()
+        {
+            MessageBox.Show(TaskCompletedMessage);
         }
     }
 }
