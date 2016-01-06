@@ -21,8 +21,8 @@ namespace excellDataReconstructor
         private string errorMessageBase = "Please select a destination to save the new excel document!";
 
         private List<List<string>> ContentMatrix = new List<List<string>>();
-        List<string> column1StraingData = new List<string>();
-        List<string> column2StraingData = new List<string>();
+        List<string> ContentColumnData = new List<string>();
+        List<string> HeaderColumnData = new List<string>();
 
         public string OrigionalFileUrl { get; set; }
         public string NewFileUrl { get; set; }
@@ -137,11 +137,11 @@ namespace excellDataReconstructor
                     {
                         break;
                     }
-                    column1StraingData.Add(cellVal.ToString());
+                    ContentColumnData.Add(cellVal.ToString());
                 }
                 else
                 {
-                    column1StraingData.Add(null);
+                    ContentColumnData.Add(null);
                 }
             }
             foreach (var cellVal in Column2)
@@ -153,11 +153,11 @@ namespace excellDataReconstructor
                         break;
                     }
 
-                    column2StraingData.Add(cellVal.ToString());
+                    HeaderColumnData.Add(cellVal.ToString());
                 }
                 else
                 {
-                    column2StraingData.Add(null);
+                    HeaderColumnData.Add(null);
                 }
             }
         }
@@ -166,35 +166,181 @@ namespace excellDataReconstructor
         {
             int i = 0;
             bool flag = false;
-            List<string> row = new List<string>();
+            List<string> headerRow = new List<string>();
+            List<string> contentRow = new List<string>();
 
-            foreach (var cellValueInCollumn2 in column2StraingData)
+            foreach (var cellValueInCollumn2 in HeaderColumnData)
             {
                 if (cellValueInCollumn2 != null)
                 {
                     flag = true;
-                    row = insertNextCell(cellValueInCollumn2, row);
+                    headerRow.Add(cellValueInCollumn2);
+                    contentRow.Add(ContentColumnData[i]);
                 }
                 else
                 {
                     if (flag)
                     {
                         flag = false;
-                        ContentMatrix.Add(row);
-                        row = new List<string>();
+                        ContentMatrix.Add(FormatRow(headerRow, contentRow));
+                        headerRow = new List<string>();
+                        contentRow = new List<string>();
                     }
                 }
 
                 i++;
             }
-            ContentMatrix.Add(row);
+            ContentMatrix.Add(headerRow);
         }
 
-        private List<string> insertNextCell(string currentCell, List<string> currentRow)
+        private List<string> FormatRow(List<string> headerRow, List<string> contentRow)
         {
-            int positionInArray = currentRow.Count;
-            currentRow.Add(currentCell);
-            return currentRow;
+            int amountOfHeaders = ContentMatrix[1].Count;
+            string[] formatedContentRow = new string[amountOfHeaders];
+            string[] unformatedHeaderRow = headerRow.ToArray();
+            string[] unformatedContentRow = contentRow.ToArray();
+
+            for (int i = 0; i < amountOfHeaders; i++)
+            {
+                formatedContentRow[i] = null;
+            }
+
+            for (int i = 0; i < unformatedHeaderRow.Length; i++)
+            {
+                string[] seperatedContent;
+                switch (unformatedHeaderRow[i])
+                {
+                    case "שם חברה":
+                        formatedContentRow[0] = unformatedContentRow[i];
+                        break;
+
+                    case "כתובת":
+                        formatedContentRow[1] = unformatedContentRow[i];
+                        break;
+
+                    case "ישוב":
+                        seperatedContent = unformatedContentRow[i].Split(',');
+                        formatedContentRow[2] = seperatedContent[0];
+
+                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        {
+                            formatedContentRow[3] = seperatedContent[1];
+                        }
+                        break;
+
+                    case "טלפון":
+                        seperatedContent = unformatedContentRow[i].Split(',');
+
+                        formatedContentRow[4] = seperatedContent[0];
+
+                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        {
+                            formatedContentRow[5] = seperatedContent[1];
+                        }
+
+                        if (seperatedContent.Length > 2 && seperatedContent[2] != null)
+                        {
+                            formatedContentRow[8] = seperatedContent[2];
+                        }
+
+                        break;
+
+                    case "פקס":
+                        formatedContentRow[6] = unformatedContentRow[i];
+                        break;
+
+                    case "דואר אלקטרוני":
+                        formatedContentRow[7] = unformatedContentRow[i];
+                        break;
+
+                    case "כתובת אינטרנט":
+                        formatedContentRow[9] = unformatedContentRow[i];
+                        break;
+
+                    case "מס. רישום":
+                        formatedContentRow[10] = unformatedContentRow[i];
+                        break;
+
+                    case "סיווגים":
+                        if (formatedContentRow[11] == null)
+                        {
+                            formatedContentRow[11] = unformatedContentRow[i];
+                        }
+                        else
+                        {
+                            formatedContentRow[11] = string.Format("{0} {1}", unformatedContentRow[i], formatedContentRow[11]);
+                        }
+                        break;
+
+                    case "אופי פעילות":
+                        if (formatedContentRow[11] == null)
+                        {
+                            formatedContentRow[11] = unformatedContentRow[i];
+                        }
+                        else
+                        {
+                            formatedContentRow[11] = string.Format("{0} {1}", unformatedContentRow[i], formatedContentRow[11]);
+                        }
+                        break;
+
+                    case "מס. מועסקים":
+                        formatedContentRow[12] = unformatedContentRow[i];
+                        break;
+
+                    case "מנהלים":
+                        seperatedContent = unformatedContentRow[i].Split(',');
+
+                        var furtherSeperatedContent = seperatedContent[0].Split(' ');
+                        switch (furtherSeperatedContent.Length)
+                        {
+                            case 1:
+                                formatedContentRow[13] = furtherSeperatedContent[0];
+                                break;
+                            case 2:
+                                formatedContentRow[13] = furtherSeperatedContent[0];
+                                formatedContentRow[14] = furtherSeperatedContent[1];
+                                break;
+                            case 3:
+                                formatedContentRow[13] = furtherSeperatedContent[0];
+                                formatedContentRow[14] = string.Format("{0} {1}", furtherSeperatedContent[1], furtherSeperatedContent[2]);
+                                break;
+                        }
+
+                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        {
+                            formatedContentRow[15] = seperatedContent[1];
+                        }
+
+                        if (seperatedContent.Length > 2 && seperatedContent[2] != null)
+                        {
+                            furtherSeperatedContent = seperatedContent[2].Split(' ');
+
+                            switch (furtherSeperatedContent.Length)
+                            {
+                                case 1:
+                                    formatedContentRow[16] = furtherSeperatedContent[0];
+                                    break;
+                                case 2:
+                                    formatedContentRow[16] = furtherSeperatedContent[0];
+                                    formatedContentRow[17] = furtherSeperatedContent[1];
+                                    break;
+                                case 3:
+                                    formatedContentRow[16] = furtherSeperatedContent[0];
+                                    formatedContentRow[17] = string.Format("{0} {1}", furtherSeperatedContent[1], furtherSeperatedContent[2]);
+                                    break;
+                            }
+                        }
+
+                        if (seperatedContent.Length > 3 && seperatedContent[3] != null)
+                        {
+                            formatedContentRow[18] = seperatedContent[3];
+                        }
+
+                        break;
+                }
+            }
+
+            return formatedContentRow.ToList();
         }
 
         private void ClearDataForNextRun()
