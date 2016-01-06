@@ -16,9 +16,9 @@ namespace excellDataReconstructor
         FileWizard _fileWizard = new FileWizard();
         ExcelParser _excelParser = new ExcelParser();
         ExcelToCsv _csvConverter = new ExcelToCsv();
-        private string errorMessageread = "Please select an origional excel file to parse!";
-        private string errorMessagesaveExcel = "Please select a destination to save the new excel document!";
-        private string errorMessagesaveCsv = "Please select a destination to save the new CSV document!";
+        private const string ErrorMessageread = "Please select an origional excel file to parse!";
+        private const string ErrorMessagesaveExcel = "Please select a destination to save the new excel document!";
+        private const string ErrorMessagesaveCsv = "Please select a destination to save the new CSV document!";
 
         public MainForm()
         {
@@ -37,17 +37,25 @@ namespace excellDataReconstructor
             _fileWizard.SelectSaveFileExcel();
             UpdateNewExcellParserFileUrl();
             Parse();
+            if (ParseDirectlyToCSV.Checked)
+            {
+                UpdateExcelltoCsvOriginalFile(_excelParser.NewFileUrl);
+                string csvAdressUrl = _excelParser.NewFileUrl.Replace(".xlsx", ".csv").Replace(".xls", ".csv");
+                UpdateNewExcelltoCsvOriginalFile(csvAdressUrl);
+                ConvertToCsv();
+                File.Delete(_excelParser.NewFileUrl);
+            }
         }
 
         private void Parse()
         {
             if (_fileWizard.OrigionalFileUrl == null)
             {
-                MessageBox.Show(errorMessageread);
+                MessageBox.Show(ErrorMessageread);
             }
             else if (_fileWizard.NewFileUrl == null)
             {
-                MessageBox.Show(errorMessagesaveExcel);
+                MessageBox.Show(ErrorMessagesaveExcel);
             }
             else
             {
@@ -97,20 +105,28 @@ namespace excellDataReconstructor
         {
             _csvConverter.OrigionalFileUrl = _fileWizard.OrigionalExcelToCsvUrl;
         }
+        private void UpdateExcelltoCsvOriginalFile(string url)
+        {
+            _csvConverter.OrigionalFileUrl = url;
+        }
         private void UpdateNewExcelltoCsvOriginalFile()
         {
             _csvConverter.NewFileUrl = _fileWizard.NewCsvUrl;
         }
+        private void UpdateNewExcelltoCsvOriginalFile(string Url)
+        {
+            _csvConverter.NewFileUrl = Url;
+        }
 
         private void ConvertToCsv()
         {
-            if (_fileWizard.OrigionalExcelToCsvUrl == null)
+            if (_csvConverter.OrigionalFileUrl == null)
             {
-                MessageBox.Show(errorMessageread);
+                MessageBox.Show(ErrorMessageread);
             }
-            else if (_fileWizard.NewCsvUrl == null)
+            else if (_csvConverter.NewFileUrl == null)
             {
-                MessageBox.Show(errorMessagesaveCsv);
+                MessageBox.Show(ErrorMessagesaveCsv);
             }
             else
             {
