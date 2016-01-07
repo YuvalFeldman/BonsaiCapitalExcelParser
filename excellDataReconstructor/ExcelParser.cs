@@ -239,7 +239,7 @@ namespace excellDataReconstructor
 
             for (int i = 0; i < unformatedHeaderRow.Length; i++)
             {
-                string[] seperatedContent;
+                string[] seperatedContentByComa;
                 switch (unformatedHeaderRow[i])
                 {
                     case "שם חברה":
@@ -251,28 +251,28 @@ namespace excellDataReconstructor
                         break;
 
                     case "ישוב":
-                        seperatedContent = unformatedContentRow[i].Split(',');
-                        formatedContentRow[2] = seperatedContent[0];
+                        seperatedContentByComa = unformatedContentRow[i].Split(',');
+                        formatedContentRow[2] = seperatedContentByComa[0];
 
-                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        if (seperatedContentByComa.Length > 1 && seperatedContentByComa[1] != null)
                         {
-                            formatedContentRow[3] = seperatedContent[1];
+                            formatedContentRow[3] = seperatedContentByComa[1];
                         }
                         break;
 
                     case "טלפון":
-                        seperatedContent = unformatedContentRow[i].Split(',');
+                        seperatedContentByComa = unformatedContentRow[i].Split(',');
 
-                        formatedContentRow[4] = seperatedContent[0];
+                        formatedContentRow[4] = seperatedContentByComa[0];
 
-                        if (seperatedContent.Length == 2 && seperatedContent[1] != null)
+                        if (seperatedContentByComa.Length == 2 && seperatedContentByComa[1] != null)
                         {
-                            formatedContentRow[8] = seperatedContent[1];
+                            formatedContentRow[8] = seperatedContentByComa[1];
                         }
-                        else if (seperatedContent.Length > 3 && seperatedContent[2] != null)
+                        else if (seperatedContentByComa.Length > 3 && seperatedContentByComa[2] != null)
                         {
-                            formatedContentRow[5] = seperatedContent[1];
-                            formatedContentRow[8] = seperatedContent[2];
+                            formatedContentRow[5] = seperatedContentByComa[1];
+                            formatedContentRow[8] = seperatedContentByComa[2];
                         }
 
                         break;
@@ -320,54 +320,56 @@ namespace excellDataReconstructor
                         break;
 
                     case "מנהלים":
-                        seperatedContent = unformatedContentRow[i].Split(',');
+                        seperatedContentByComa = unformatedContentRow[i].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        var furtherSeperatedContent = seperatedContent[0].Split(' ');
+                        var furtherSeperatedContent = seperatedContentByComa[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         switch (furtherSeperatedContent.Length)
                         {
                             case 1:
                                 formatedContentRow[13] = furtherSeperatedContent[0];
                                 break;
-                            case 2:
+                            default:
                                 formatedContentRow[13] = furtherSeperatedContent[0];
-                                formatedContentRow[14] = furtherSeperatedContent[1];
-                                break;
-                            case 3:
-                                formatedContentRow[13] = furtherSeperatedContent[0];
-                                formatedContentRow[14] = string.Format("{0} {1}", furtherSeperatedContent[1], furtherSeperatedContent[2]);
+                                string joinedContent = furtherSeperatedContent[1];
+                                for (int l = 2; l < furtherSeperatedContent.Length; l++)
+                                {
+                                    joinedContent = string.Format("{0} {1}", joinedContent, furtherSeperatedContent[l]);
+                                }
+                                formatedContentRow[14] = joinedContent;
                                 break;
                         }
 
-                        if (seperatedContent.Length > 1 && seperatedContent[1] != null)
+                        if (seperatedContentByComa.Length >= 2 && seperatedContentByComa[1] != null)
                         {
-                            formatedContentRow[15] = seperatedContent[1];
-                        }
-
-                        if (seperatedContent.Length > 2 && seperatedContent[2] != null)
-                        {
-                            furtherSeperatedContent = seperatedContent[2].Split(' ');
-
+                            furtherSeperatedContent = seperatedContentByComa[1].Split(new[]{' '}, StringSplitOptions.RemoveEmptyEntries);
                             switch (furtherSeperatedContent.Length)
                             {
                                 case 1:
-                                    formatedContentRow[16] = furtherSeperatedContent[0];
+                                    formatedContentRow[15] = furtherSeperatedContent[0];
                                     break;
                                 case 2:
-                                    formatedContentRow[16] = furtherSeperatedContent[0];
-                                    formatedContentRow[17] = furtherSeperatedContent[1];
+                                    formatedContentRow[15] = furtherSeperatedContent[0];
+                                    formatedContentRow[16] = furtherSeperatedContent[1];
                                     break;
-                                case 3:
-                                    formatedContentRow[16] = furtherSeperatedContent[0];
-                                    formatedContentRow[17] = string.Format("{0} {1}", furtherSeperatedContent[1], furtherSeperatedContent[2]);
+                                default:
+                                    formatedContentRow[15] = furtherSeperatedContent[0];
+                                    formatedContentRow[16] = furtherSeperatedContent[1];
+
+                                    string joinedContent = furtherSeperatedContent[2];
+                                    for (int l = 3; l < furtherSeperatedContent.Length; l++)
+                                    {
+                                        joinedContent = string.Format("{0} {1}", joinedContent, furtherSeperatedContent[l]);
+                                    }
+                                    formatedContentRow[17] = joinedContent;
                                     break;
                             }
                         }
-
-                        if (seperatedContent.Length > 3 && seperatedContent[3] != null)
+                        if (seperatedContentByComa.Length >= 3 && seperatedContentByComa[2] != null)
                         {
-                            formatedContentRow[18] = seperatedContent[3];
-                        }
+                            furtherSeperatedContent = seperatedContentByComa[2].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            formatedContentRow[18] = furtherSeperatedContent[0];
 
+                        }
                         break;
                 }
             }
