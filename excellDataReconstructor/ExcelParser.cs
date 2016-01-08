@@ -19,8 +19,9 @@ namespace excellDataReconstructor
         private Worksheet newMySheet;
 
         private string currentSheet = "Sheet1";
-        private string errorMessageBase = "Please select a destination to save the new excel document!";
-        private string TaskCompletedMessage = "Conversion to excel has completed.";
+        private const string errorMessageBase = "Please select a destination to save the new excel document!";
+        private const string TaskCompletedMessage = "Conversion to excel has completed.";
+        private const string endString = "מספר דנס";
 
         private List<List<string>> ContentMatrix = new List<List<string>>();
         List<string> ContentColumnData = new List<string>();
@@ -115,9 +116,9 @@ namespace excellDataReconstructor
 
         private void GetColumnData()
         {
-            var Column1 = OriginalMySheet.Range["A:A"].Cells.Value;
-            var Column2 = OriginalMySheet.Range["B:B"].Cells.Value;
-            foreach (var cellVal in Column1)
+            var column1 = OriginalMySheet.Range["A:A"].Cells.Value;
+            var column2 = OriginalMySheet.Range["B:B"].Cells.Value;
+            foreach (var cellVal in column1)
             {
                 if (cellVal != null)
                 {
@@ -132,7 +133,7 @@ namespace excellDataReconstructor
                     ContentColumnData.Add(null);
                 }
             }
-            foreach (var cellVal in Column2)
+            foreach (var cellVal in column2)
             {
                 if (cellVal != null)
                 {
@@ -165,7 +166,8 @@ namespace excellDataReconstructor
                 "סיווגים",
                 "אופי פעילות",
                 "מס. מועסקים",
-                "מנהלים"
+                "מנהלים",
+                "מספר דנס"
             };
             for(int k = 0; k < HeaderColumnData.Count; k++)
             {
@@ -197,7 +199,6 @@ namespace excellDataReconstructor
         private void ParseData()
         {
             int i = 0;
-            bool flag = false;
             List<string> headerRow = new List<string>();
             List<string> contentRow = new List<string>();
 
@@ -205,21 +206,16 @@ namespace excellDataReconstructor
             {
                 if (cellValueInCollumn2 != null)
                 {
-                    flag = true;
-                    headerRow.Add(cellValueInCollumn2);
-                    contentRow.Add(ContentColumnData[i]);
-                }
-                else
-                {
-                    if (flag)
+                    if (cellValueInCollumn2 == endString)
                     {
-                        flag = false;
                         ContentMatrix.Add(FormatRow(headerRow, contentRow));
                         headerRow = new List<string>();
                         contentRow = new List<string>();
                     }
-                }
 
+                    headerRow.Add(cellValueInCollumn2);
+                    contentRow.Add(ContentColumnData[i]);
+                }
                 i++;
             }
             ContentMatrix.Add(headerRow);
