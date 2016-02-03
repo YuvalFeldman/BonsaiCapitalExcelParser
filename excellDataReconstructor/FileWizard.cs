@@ -23,7 +23,12 @@ namespace excellDataReconstructor
 
         public string OrigionalFileUrl { get; set; }
         public string OrigionalFileName { get; set; }
+        public string OrigionalFileUrlDataReconstructor { get; set; }
+        public string OrigionalFileNameDataReconstructor { get; set; }
+        public string referenceFileUrlDataReconstructor { get; set; }
+        public string referenceFileNameDataReconstructor { get; set; }
         public string NewFileUrl { get; set; }
+        public string NewFileUrlDataReconstructor { get; set; }
         public string OrigionalExcelToCsvUrl { get; set; }
         public string OrigionalExcelToCsvFileName { get; set; }
         public string NewCsvUrl { get; set; }
@@ -35,6 +40,26 @@ namespace excellDataReconstructor
             {
                 OrigionalFileUrl = _openFileDialogDisplayContent.FileName;
                 OrigionalFileName = _openFileDialogDisplayContent.SafeFileName;
+            }
+        }
+        public void SelectFileToExcelDataReconstructor()
+        {
+            OrigionalFileUrlDataReconstructor = null;
+            OrigionalFileNameDataReconstructor = null;
+            if (_openFileDialogDisplayContent.ShowDialog() == DialogResult.OK)
+            {
+                OrigionalFileUrlDataReconstructor = _openFileDialogDisplayContent.FileName;
+                OrigionalFileNameDataReconstructor = _openFileDialogDisplayContent.SafeFileName;
+            }
+        }
+        public void SelectReferenceFileToExcelDataReconstructor()
+        {
+            referenceFileUrlDataReconstructor = null;
+            referenceFileNameDataReconstructor = null;
+            if (_openFileDialogDisplayContent.ShowDialog() == DialogResult.OK)
+            {
+                referenceFileUrlDataReconstructor = _openFileDialogDisplayContent.FileName;
+                referenceFileNameDataReconstructor = _openFileDialogDisplayContent.SafeFileName;
             }
         }
 
@@ -59,6 +84,18 @@ namespace excellDataReconstructor
                     File.Delete(NewFileUrl);
                 }
                 NewFileUrl = _saveFileDialogExcelFilter.FileName;
+            }
+        }
+        public void SelectSaveFileExcelDataReconstructor()
+        {
+            NewFileUrlDataReconstructor = null;
+            if (_saveFileDialogExcelFilter.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(NewFileUrlDataReconstructor) && NewFileUrlDataReconstructor != null)
+                {
+                    File.Delete(NewFileUrlDataReconstructor);
+                }
+                NewFileUrlDataReconstructor = _saveFileDialogExcelFilter.FileName;
             }
         }
 

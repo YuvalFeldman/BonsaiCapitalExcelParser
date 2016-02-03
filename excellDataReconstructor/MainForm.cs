@@ -16,6 +16,7 @@ namespace excellDataReconstructor
         FileWizard _fileWizard = new FileWizard();
         ExcelParser _excelParser = new ExcelParser();
         ExcelToCsv _csvConverter = new ExcelToCsv();
+        DataReconstructor _DataReconstructor = new DataReconstructor();
         private const string ErrorMessageread = "Please select an origional excel file to parse!";
         private const string ErrorMessagesaveExcel = "Please select a destination to save the new excel document!";
         private const string ErrorMessagesaveCsv = "Please select a destination to save the new CSV document!";
@@ -132,6 +133,27 @@ namespace excellDataReconstructor
             {
                 _csvConverter.ConvertToCsv();
             }
+        }
+
+        private void SaveExcelFileFeildReconstructor_Click(object sender, EventArgs e)
+        {
+            //todo: _fileWizard.SelectSaveFileExcelDataReconstructor();
+            //todo: add checks to see if the files are null
+            if (true)
+            {
+                int i = (int) NumericRowSelectorExcelFileFeildReconstructor.Value;
+                _DataReconstructor.Reconstruct(_fileWizard.OrigionalFileUrlDataReconstructor, _fileWizard.NewFileUrlDataReconstructor, _fileWizard.referenceFileUrlDataReconstructor, (int)NumericRowSelectorExcelFileFeildReconstructor.Value);
+            }
+        }
+
+        private void SelectExcelFileFeildReconstructor_Click(object sender, EventArgs e)
+        {
+            _fileWizard.SelectFileToExcelDataReconstructor();
+        }
+
+        private void SelectExcelReferenceFileFeildReconstructor_Click(object sender, EventArgs e)
+        {
+            _fileWizard.SelectReferenceFileToExcelDataReconstructor();
         }
     }
 }
